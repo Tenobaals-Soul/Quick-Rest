@@ -5,8 +5,9 @@
 #define STRING_DICT_TABLE_SIZE 512
 
 typedef struct StringDict {
+    struct string_dict_item* items;
+    unsigned int capacity;
     unsigned int count;
-    struct string_dict_item* items[STRING_DICT_TABLE_SIZE];
 } StringDict;
 
 void string_dict_init(StringDict* dict);

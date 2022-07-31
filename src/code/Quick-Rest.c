@@ -31,5 +31,5 @@ void endpoint_handler(struct session_args args) {
 }
 
 int main(int argc, char** argv) {
-    start_listening_socket("5000", endpoint_handler, NULL);
+    
 }

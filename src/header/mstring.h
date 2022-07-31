@@ -5,6 +5,13 @@
 #include<string.h>
 
 /**
+ * Copys src to a newly allocated string with strlen(src) + 1 bytes space
+ * @param src the string to copy
+ * @return the new string
+ */
+char* strmcpy(const char* src);
+
+/**
  * Splits src in multiple strings on the specified seperating char.
  * For example strmsplit("a|b|cd||e", '|') will return:
  * (char**) {"a", "b", "cd", "", "e", NULL}

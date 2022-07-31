@@ -5,6 +5,12 @@
 #include<limits.h>
 #include<stdarg.h>
 
+char* strmcpy(const char* src) {
+    char* nstr = malloc(strlen(src) + 1);
+    strcpy(nstr, src);
+    return nstr;
+}
+
 char** strmrealsplit(const char* src, char split_char) {
     int item_count = 2;
     for (int i = 0; src[i]; i++) {
