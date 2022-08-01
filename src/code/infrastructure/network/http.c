@@ -1,6 +1,6 @@
-#include<http.h>
-#include<string_dict.h>
-#include<mstring.h>
+#include<infrastructure/network/http.h>
+#include<infrastructure/datastructures/string_dict.h>
+#include<infrastructure/mstring.h>
 #include<time.h>
 #include<unistd.h>
 #include<stdlib.h>

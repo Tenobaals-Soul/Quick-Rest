@@ -1,4 +1,4 @@
-#include<mstring.h>
+#include<infrastructure/mstring.h>
 #include<stdlib.h>
 #include<memory.h>
 #include<stdbool.h>
@@ -165,8 +165,6 @@ char* strmcat(const char* src1, const char* src2) {
 }
 
 char* strmformat(const char* format, ...) {
-    size_t len = 0;
-    bool found_format = false;
     va_list args;
 
     va_start(args, format);

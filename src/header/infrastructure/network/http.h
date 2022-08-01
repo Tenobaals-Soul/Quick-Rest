@@ -1,7 +1,7 @@
 #ifndef INCLUDE_HTTP
 #define INCLUDE_HTTP
 #include<time.h>
-#include<string_dict.h>
+#include<infrastructure/datastructures/string_dict.h>
 
 const char* http_code_message(int code);
 

@@ -1,4 +1,7 @@
-#include<listener.h>
+#include<infrastructure/network/listener.h>
+#include<infrastructure/network/http.h>
+#include<infrastructure/datastructures/string_dict.h>
+#include<infrastructure/mstring.h>
 #include<errno.h>
 #include<string.h>
 #include<unistd.h>
@@ -7,9 +10,6 @@
 #include<netinet/in.h>
 #include<stdlib.h>
 #include<stdio.h>
-#include<string_dict.h>
-#include<http.h>
-#include<mstring.h>
 #include<unistd.h>
 #include<sys/mman.h>
 
@@ -19,17 +19,32 @@
 
 #define READ_STEP_SIZE (1 << 12)
 
-char* read_all(int fd, size_t max_header_size, size_t max_content_size, size_t max_bytes, size_t* size) {
+#define MESSAGE_FINE 0
+#define MESSAGE_TO_LONG 1
+#define HEADER_TO_LONG 2
+#define CONTENT_TO_LONG 3
+
+char* read_all(int fd, size_t max_header_size, size_t max_content_size,
+               size_t max_bytes, size_t* size, int* error) {
+    (void) max_header_size;
+    (void) max_content_size;
+    *error = MESSAGE_FINE;
     size_t len = 0;
     char* buffer = malloc(READ_STEP_SIZE);
     while (1) {
-        size_t last_read_len = read(fd, buffer + len, READ_STEP_SIZE);
+        size_t read_len = READ_STEP_SIZE + len <= max_bytes ? READ_STEP_SIZE : max_bytes - len;
+        size_t last_read_len = read(fd, buffer + len, read_len);
         len += last_read_len;
-        if (last_read_len != READ_STEP_SIZE) {
+        if (last_read_len != read_len) {
             break;
         }
+        else if (READ_STEP_SIZE + len > max_bytes) {
+            *error = MESSAGE_TO_LONG;
+            free(buffer);
+            return NULL;
+        }
         else {
-            buffer = realloc(buffer, len + READ_STEP_SIZE);
+            buffer = realloc(buffer, len + read_len);
         }
     }
     *size = len;
@@ -44,7 +59,11 @@ void handle_session(int fd, void (*endpoint_handler)(struct session_args), struc
             "Content-Length: 15\r\nConnection: close", "Invalid Address");
     }
     size_t request_len;
-    char* request = read_all(fd, 1 << 24, 1 << 24, 1 << 24, &request_len);
+    char* request = read_all(fd, 1 << 24, 1 << 24, 1 << 24, &request_len, &err);
+    if (err != 0) {
+        http_abort(fd, 400, "Content-Type: text/plain\r\nContent-Language: en-us\r\n"
+            "Content-Length: 15\r\nConnection: close", "Request to long");
+    }
     endpoint_handler((struct session_args) {args, fd, { buffer, addr }, NULL, request, request_len});
     free(request);
     close(fd);

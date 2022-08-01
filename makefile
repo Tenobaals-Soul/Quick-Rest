@@ -1,38 +1,44 @@
-TARGET_EXEC := Quick-Rest
 CC := gcc
 
-CFLAGS := -O3
-LDFLAGS :=
+OFLAGS := -O3 -Wall -Wextra
+CFLAGS := -O3 -Wall -Wextra
 
+EXEC := QuickRest_x86_64
 BUILD_DIR := out
-SRC_DIRS := src/code
+SRC_DIR := src/code
+INC_DIR := src/header
+LINKER := m glfw vulkan
 
-rebuild:
-	rm -f $(TARGET_EXEC)
+DEBUG_FLAGS = -DDEBUG -g
 
-all: $(TARGET_EXEC)
+all: remove_executables $(EXEC)
 
-debug: CFLAGS += -DDEBUG -g
-debug: $(TARGET_EXEC)
+remove_executables:
+	@rm -f $(EXEC)
 
-SRCS := $(shell find $(SRC_DIRS) -name '*.c')
+set_debug:
+	$(eval CFLAGS += $(DEBUG_FLAGS))
 
-OBJS := $(SRCS:$(SRC_DIRS)/%=$(BUILD_DIR)/%.o)
+debug: set_debug all
 
-INC_DIRS=src/header
-INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+rebuild: clean all
 
-# The final build step.
-$(TARGET_EXEC): rebuild $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -O3 -o $@ $(LDFLAGS)
+SRCS := $(shell find $(SRC_DIR) -name '*.c')
+OBJS := $(SRCS:$(SRC_DIR)/%=$(BUILD_DIR)/%.o)
 
-# Build step for C source
-$(BUILD_DIR)/%.c.o: $(SRC_DIRS)/%.c
-	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(INC_FLAGS) -c $< -o $@
+INC_FLAGS := $(addprefix -I,$(INC_DIR))
+LINKER_FLAGS := $(addprefix -l,$(LINKER))
 
-.PHONY: clean debug
+$(EXEC): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) $(LINKER_FLAGS) -o $@
+
+$(BUILD_DIR)/%.c.o: $(SRC_DIR)/%.c
+	$(eval DIR_NAME := $(shell dirname ./$@))
+	@mkdir -p $(DIR_NAME)
+	$(CC) $(OFLAGS) $(DEBUG_FLAGS) $(INC_FLAGS) -c $< -o $@ $(LINKER_FLAGS)
+
+.PHONY: clean debug rebuild
 
 clean:
 	rm -f -r $(BUILD_DIR)/*
-	rm -f $(TARGET_EXEC)
+	rm -f $(EXEC)

@@ -1,8 +1,8 @@
+#include<infrastructure/datastructures/string_dict.h>
+#include<infrastructure/mstring.h>
 #include<stdlib.h>
 #include<string.h>
-#include<string_dict.h>
 #include<assert.h>
-#include<mstring.h>
 
 struct string_dict_item {
     char* key;
@@ -18,7 +18,7 @@ void string_dict_init(StringDict* dict) {
 
 static int hash_string(const char* string) {
     int hash = 0;
-    for (int i = 0; i < 8 && string[i]; i++) {
+    for (unsigned int i = 0; i < 8 && string[i]; i++) {
         hash += string[i];
     }
     return hash;
@@ -27,13 +27,13 @@ static int hash_string(const char* string) {
 static inline void string_dict_set(struct string_dict_item* array,
                                    unsigned int capacity,
                                    struct string_dict_item new) {
-    for (int i = new.hash; i < capacity; i++) {
+    for (unsigned int i = new.hash; i < capacity; i++) {
         if (array[i].key == NULL || strcmp(array[i].key, new.key) == 0) {
             array[i] = new;
             return;
         }
     };
-    for (int i = 0; i < capacity; i++) {
+    for (unsigned int i = 0; i < capacity; i++) {
         if (array[i].key == NULL || strcmp(array[i].key, new.key) == 0) {
             array[i] = new;
             return;
@@ -45,7 +45,7 @@ static inline void string_dict_set(struct string_dict_item* array,
 static inline void string_dict_remove(struct string_dict_item* array,
                                       unsigned int capacity,
                                       const char* key, unsigned int hash) {
-    for (int i = hash; i < capacity; i++) {
+    for (unsigned int i = hash; i < capacity; i++) {
         if (array[i].key == NULL) {
             return;
         }
@@ -54,7 +54,7 @@ static inline void string_dict_remove(struct string_dict_item* array,
             return;
         }
     };
-    for (int i = 0; i < capacity; i++) {
+    for (unsigned int i = 0; i < capacity; i++) {
         if (array[i].key == NULL) {
             return;
         }
@@ -98,7 +98,7 @@ void string_dict_put(StringDict* dict, const char* key, void* val) {
 
 void* string_dict_get(StringDict* dict, const char* key) {
     unsigned int hash = ((unsigned) hash_string(key)) % dict->capacity;
-    for (int i = hash; i < dict->capacity; i++) {
+    for (unsigned int i = hash; i < dict->capacity; i++) {
         if (dict->items[i].key == NULL) {
             return NULL;
         }
@@ -106,7 +106,7 @@ void* string_dict_get(StringDict* dict, const char* key) {
             return dict->items[i].val;
         }
     };
-    for (int i = 0; i < dict->capacity; i++) {
+    for (unsigned int i = 0; i < dict->capacity; i++) {
         if (dict->items[i].key == NULL) {
             return NULL;
         }
