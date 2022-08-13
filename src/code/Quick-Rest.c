@@ -1,6 +1,7 @@
 #include<infrastructure/network/listener.h>
 #include<infrastructure/network/http.h>
 #include<infrastructure/mstring.h>
+#include<interpreter/core.h>
 #include<unistd.h>
 #include<dirent.h>
 #include<stdio.h>
@@ -31,5 +32,5 @@ void endpoint_handler(struct session_args args) {
 }
 
 int main(int argc, char** argv) {
-    
+    qr_exec(argc, argv);
 }

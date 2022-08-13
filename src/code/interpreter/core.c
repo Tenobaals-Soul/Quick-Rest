@@ -1,3 +1,7 @@
+#include<infrastructure/datastructures/string_dict.h>
+#include<infrastructure/datastructures/stack.h>
+#include<interpreter/core.h>
+#include<interpreter/lex.h>
 #include<stdlib.h>
 #include<fcntl.h>
 #include<stdio.h>
@@ -18,7 +22,7 @@ void print_argument_help_and_exit() {
 }
 
 void advance_args(int* argc, char*** argv) {
-    if (*argc == 1) {
+    if (*argc == 0) {
         print_argument_help_and_exit();
     }
     else {
@@ -28,10 +32,10 @@ void advance_args(int* argc, char*** argv) {
 }
 
 struct config config_parse(int argc, char** argv) {
-    struct config config;
+    struct config config = {0};
     config.self = argv[0];
     advance_args(&argc, &argv);
-    config.self = argv[0];
+    config.file = argv[0];
     advance_args(&argc, &argv);
     for (int i = 0; i < argc; i++) {
         print_argument_help_and_exit();
@@ -41,7 +45,11 @@ struct config config_parse(int argc, char** argv) {
 }
 
 int qr_str_exec(const char* file_content) {
-    while (1) {
+    struct lex_state lex_state = {0};
+    while (file_content[lex_state.cursor_pos]) {
+        Token** tokens = lex_next_line(file_content, &lex_state);
+        if (tokens == NULL) continue;
+        free(tokens);
     }
 }
 

@@ -7,7 +7,7 @@ EXEC := QuickRest_x86_64
 BUILD_DIR := out
 SRC_DIR := src/code
 INC_DIR := src/header
-LINKER := m glfw vulkan
+LINKER := m
 
 DEBUG_FLAGS = -DDEBUG -g
 
